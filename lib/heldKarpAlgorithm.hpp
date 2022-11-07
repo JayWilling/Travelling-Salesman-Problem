@@ -1,3 +1,4 @@
+#include <vector>
 
 // Dynamic programming approach to TSP
 
@@ -10,8 +11,9 @@ private:
     int start_node;
     int finish_state;
 
-    double[][] distance;
-    double
+    std::vector<std::vector<double>> distance;
+    std::vector<int> tour;
+    bool solver = false;
 
-        public:
-}
+public:
+};
