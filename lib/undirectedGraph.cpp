@@ -22,7 +22,7 @@ void undirected_graph<vertex>::add_vertex(const vertex &u)
     if (!contains(u))
     {
         vertices.insert(u);
-        edges[u] = std::unordered_set<std::pair<vertex, float>>();
+        edges[u] = std::unordered_set<vertex>();
     }
 }
 
@@ -40,21 +40,27 @@ void undirected_graph<vertex>::add_edge(const vertex &u, const vertex &v)
         // Calculate weight/distance between locations first
         float distance = calculate_weight(u, v);
 
-        edges[u].insert(std::pair<vertex, float>(v, distance));
-        edges[v].insert(std::pair<vertex, float>(u, distance));
+        edges[u].insert(v);
+        edges[v].insert(u);
     }
 }
 
+// Removing vertex removes edges
 void undirected_graph<vertex>::remove_vertex(const vertex &u)
 {
     vertices.erase(u);
-    edges.erase(u);
+    for (vertex v : edges[u]) {
+        remove_edge(u, v);
+    }
+
 }
 
+// Removing edge must remove it from both directions
 void undirected_graph<vertex>::remove_edge(const vertex &u, const vertex &v)
 {
-    if (contains(u))
+    if (contains(u) && contains(v))
     {
         edges[u].erase(v);
+        edges[v].erase(u);
     }
 }

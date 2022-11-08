@@ -56,7 +56,8 @@ class undirected_graph
 
 private:
     std::unordered_set<vertex> vertices;
-    std::unordered_map<vertex, std::unordered_set<std::pair<vertex, float>>> edges;
+    std::unordered_map<vertex, std::unordered_set<vertex>> edges;
+    std::vector<vertex> odd_vertices;
 
 public:
     // Constructor(s) & destructors
@@ -79,6 +80,16 @@ public:
 
     float calculate_weight(const vertex &u, const vertex &v);
     bool contains(const vertex &u) const;
+
+    // For Christofides
+    //      -- List for odd vertices in private ^^ (Currently a vector, might change to unordered_set)
+    //      -- Not sure if we'll need these functions to return anything yet but we'll start here
+    void christofides();            // Presumably the parent function
+    void prims_mst();               // Pick either, both have benefits
+    void kruskals_mst();
+    void perfect_matching();
+    void euler_tour();
+    void make_hamiltonian();
 
     // Iterator function definitions
     vertex_iterator vertexBegin();
