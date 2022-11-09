@@ -21,6 +21,13 @@ bool undirected_graph<vertex>::contains(const vertex &u) const
     return vertices.count(u) > 0;
 }
 
+int undirected_graph<vertex>::get_degree(const vertex &u) {
+    if (contains(u)) {
+        return edges[u].size();
+    }
+    return 0;
+}
+
 void undirected_graph<vertex>::add_vertex(const vertex &u)
 {
     if (!contains(u))
@@ -72,59 +79,24 @@ void undirected_graph<vertex>::remove_edge(const vertex &u, const vertex &v)
     }
 }
 
-// std::pair<vertex, vertex> undirected_graph<vertex>::get_min_weight(std::unordered_set<vertex> &visited) {
+vertex undirected_graph<vertex>::get_min_vertex(std::unordered_map<vertex, float> weights, std::unordered_map<vertex, bool> visited) {
 
-//     for (vertex u : vertices) {
-//         if (visited.count(u) < 1) {
-//             for (std::pair<vertex, float> x : edges[u]) {
+    float min = std::numeric_limits<float>::infinity();
+    vertex minVertex;
 
-//             }
-//         }
-//     }
-
-// }
-
-void undirected_graph<vertex>::prims_mst() {
-    // Define a list of visisted vertices
-    std::unordered_map<vertex, bool> visited;
-    std::unordered_map<vertex, std::pair<float, vertex>> minEdges;
-    std::pair<float, vertex> currentMinimumEdge;
-    std::priority_queue<minHeap, std::vector<minHeap>, std::greater<minHeap>> pq;
-
-    // Set minEdge values to infinity
     for (vertex u : vertices) {
-        minEdges[u] = std::pair<float, vertex>(0, NULL);
-    }
-
-    // Visit the "first" vertex and add edges to minEdge
-    auto vertexIt = vertices.begin();
-    visited[*vertexIt] = true;
-    // TODO: Add vertex to tree
-
-    // Update minimum cost to get to each unvisited vertex
-    for (auto edge : edges[*vertexIt]) {
-        minEdges[edge.first] = std::pair<float, vertex>(edge.second, *vertexIt);
-        pq.push(minEdges[edge.first]);
-        // if (minEdges[edge.first].first < currentMinimumEdge.first) {
-        //     currentMinimumEdge = minEdges[edge.first];
-        // }
-    }
-
-    // Iterate over the currentMinimumEdge until all vertices visited
-    while (!pq.empty()) {
-        // TODO: Add edge and vertex to tree
-        std::pair<float, vertex> currentEdge = pq.top();
-        pq.pop();
-        if (!visited[currentEdge.second]) {
-            visited[currentEdge.second] = true;
-            for (auto edge : edges[currentMinimumEdge.second]) {
-                minEdges[edge.first] = std::pair<float, vertex>(edge.second, *vertexIt);
-                pq.push(minEdges[edge.first]);
-            }
+        if (!visited[u] && weights[u] < min) {
+            min = weights[u];
+            minVertex = u;
         }
     }
 
-    // REDO
+    return minVertex;
+
+}
+
+void undirected_graph<vertex>::prims_mst() {
+
     std::unordered_map<vertex, bool> visited;
     std::unordered_map<vertex, vertex> minEdge;     // Store the lowest weight "parent" for the given vertex key
     std::unordered_map<vertex, float> weights;      // Store the lowest distance to get to the given vertex key - minEdge and weights updated at the same time
@@ -139,6 +111,45 @@ void undirected_graph<vertex>::prims_mst() {
     vertex startVertex = *vertices.begin();
     visited[startVertex] = true;
     weights[startVertex] = 0.0;
+    minEdge[startVertex] = startVertex; // As minEdge[startVertex] != startVertex, we will use this to identify the root during construction later.
+
+    // Loop for each vertex
+    for (int i = 0; i < vertices.size(); i++) {
+
+        // Select the next closest vertex (lowest weight as set in the weights[])
+        vertex v = get_min_vertex(weights, visited);
+        visited[v] = true;
+
+        // Neighbour iterator approach
+        for (auto it = edges[v].begin(); it != edges[v].end(); it++) {
+            vertex u = it->first;
+            float uWeight = it->second;
+            if (!visited[u] && uWeight < weights[u]) {
+                weights[u] = uWeight;
+                minEdge[u] = v;
+            }
+        }
+
+        // Normal approach
+        for (vertex u : vertices) {
+            // TODO: Need function to verify an edge exists
+            if (!visited[u] && edges[v][u] < weights[u]) {
+                // A cheaper edge has been found
+                weights[u] = edges[v][u];
+                minEdge[u] = v;
+            }
+        }
+    }
+
+    // Build the MST now that minimum edges are "selected"
+    // I assume this can replace the existing edges, for now it is stored separately
+    for (vertex u : vertices) {
+        vertex v = minEdge[u];
+        if (u != v) {
+            mst[u][v] = weights[u];
+            mst[v][u] = weights[u];
+        }
+    }
 
 }
 
@@ -174,5 +185,20 @@ void union_set(int u, int v) {
 }
 
 void undirected_graph<vertex>::find_odd_degrees() {
+    for (vertex u : vertices) {
+        int degree = get_degree(u);
+        if (degree % 2 == 1) {
+            odd_vertices.push_back(u);
+        }
+    }
+}
 
+void undirected_graph<vertex>::perfect_matching() {
+    // Very similar to the greedy approach used in prims
+    // once we have found the odd degrees we:
+    //      Iterate over the odd degrees
+    //          Start with any, it does not matter which as they will all be paired
+    //      Then find the other odd degree which is closest
+    //      These are then pushed to the mst to form a connected multigraph
+    //          Not sure how to store as a multigraph with current setup but shouldn't be a problem.
 }
