@@ -177,7 +177,7 @@ int find_set(int i) {
     }
     // if not, then i is not the representative of the set
     // use recursion on its parent
-    return parent[i] = find(parent[i]);
+    return parent[i] = find_set(parent[i]);
 }
 // Method for Union (from GFG)
 void union_set(int u, int v) {
