@@ -34,6 +34,8 @@ struct vertex
                xPos == other.xPos &&
                yPos == other.yPos;
     }
+
+    explicit vertex();
 };
 
 /*
@@ -56,7 +58,8 @@ class undirected_graph
 
 private:
     std::unordered_set<vertex> vertices;
-    std::unordered_map<vertex, std::unordered_set<vertex>> edges;
+    // std::unordered_map<vertex, std::unordered_set<vertex>> edges;
+    std::unordered_map<vertex, std::unordered_map<vertex, float>> edges; // Stores the weight tied to each edge
     std::vector<vertex> odd_vertices;
 
 public:
@@ -87,9 +90,11 @@ public:
     void christofides();            // Presumably the parent function
     void prims_mst();               // Pick either, both have benefits
     void kruskals_mst();
+    void find_odd_degrees();
     void perfect_matching();
     void euler_tour();
     void make_hamiltonian();
+    std::pair<vertex, vertex> get_min_weight(std::unordered_set<vertex> &visited);
 
     // Iterator function definitions
     vertex_iterator vertexBegin();
