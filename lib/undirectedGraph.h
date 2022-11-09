@@ -60,6 +60,7 @@ private:
     std::unordered_set<vertex> vertices;
     // std::unordered_map<vertex, std::unordered_set<vertex>> edges;
     std::unordered_map<vertex, std::unordered_map<vertex, float>> edges; // Stores the weight tied to each edge
+    std::unordered_map<vertex, std::unordered_map<vertex, float>> mst; // Stores the weight tied to each edge
     std::vector<vertex> odd_vertices;
 
 public:
@@ -83,6 +84,7 @@ public:
 
     float calculate_weight(const vertex &u, const vertex &v);
     bool contains(const vertex &u) const;
+    int get_degree(const vertex &u);
 
     // For Christofides
     //      -- List for odd vertices in private ^^ (Currently a vector, might change to unordered_set)
@@ -94,7 +96,7 @@ public:
     void perfect_matching();
     void euler_tour();
     void make_hamiltonian();
-    std::pair<vertex, vertex> get_min_weight(std::unordered_set<vertex> &visited);
+    vertex get_min_vertex(std::unordered_map<vertex, float> weights, std::unordered_map<vertex, bool> visited);
 
     // Iterator function definitions
     vertex_iterator vertexBegin();
