@@ -90,6 +90,8 @@ public:
     void christofides();            // Presumably the parent function
     void prims_mst();               // Pick either, both have benefits
     void kruskals_mst();
+    int find_set(int i);
+    void union_set(int u, int v);
     void find_odd_degrees();
     void perfect_matching();
     void euler_tour();
