@@ -21,18 +21,18 @@ struct vertex
     vertex(std::string, int, int);
 
     // Structs do not have predefined comparison operators
-    bool operator!=(const vertex &other)
+    bool operator!=(const vertex &other) const
     {
-        return location == other.location &&
+        return (location == other.location &&
                xPos == other.xPos &&
-               yPos == other.yPos;
+               yPos == other.yPos);
     }
 
-    bool operator==(const vertex &other)
+    bool operator==(const vertex &other) const
     {
-        return location == other.location &&
+        return (location == other.location &&
                xPos == other.xPos &&
-               yPos == other.yPos;
+               yPos == other.yPos);
     }
 
     explicit vertex();
