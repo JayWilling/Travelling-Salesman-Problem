@@ -2,6 +2,10 @@
 #include <string>
 #include <utility>
 #include <cmath>
+#include <limits>
+#include <queue>
+
+typedef std::pair<float, vertex> minHeap;
 
 vertex::vertex(std::string location, int x, int y)
 {
@@ -17,12 +21,20 @@ bool undirected_graph<vertex>::contains(const vertex &u) const
     return vertices.count(u) > 0;
 }
 
+int undirected_graph<vertex>::get_degree(const vertex &u) {
+    if (contains(u)) {
+        return edges[u].size();
+    }
+    return 0;
+}
+
 void undirected_graph<vertex>::add_vertex(const vertex &u)
 {
     if (!contains(u))
     {
         vertices.insert(u);
-        edges[u] = std::unordered_set<std::pair<vertex, float>>();
+        // edges[u] = std::unordered_set<vertex>();
+        edges[u] = std::unordered_map<vertex, float>();
     }
 }
 
@@ -40,22 +52,43 @@ void undirected_graph<vertex>::add_edge(const vertex &u, const vertex &v)
         // Calculate weight/distance between locations first
         float distance = calculate_weight(u, v);
 
-        edges[u].insert(std::pair<vertex, float>(v, distance));
-        edges[v].insert(std::pair<vertex, float>(u, distance));
+        // edges[u].insert(v);
+        // edges[v].insert(u);
+        float newWeight = calculate_weight(u, v);
+        edges[u][v] = newWeight;
     }
 }
 
+// Removing vertex removes edges
 void undirected_graph<vertex>::remove_vertex(const vertex &u)
 {
+    for (vertex v : vertices) {
+        remove_edge(u, v);
+    }
     vertices.erase(u);
-    edges.erase(u);
+
 }
 
+// Removing edge must remove it from both directions
 void undirected_graph<vertex>::remove_edge(const vertex &u, const vertex &v)
 {
-    if (contains(u))
+    if (contains(u) && contains(v))
     {
         edges[u].erase(v);
+        edges[v].erase(u);
+    }
+}
+
+vertex undirected_graph<vertex>::get_min_vertex(std::unordered_map<vertex, float> weights, std::unordered_map<vertex, bool> visited) {
+
+    float min = std::numeric_limits<float>::infinity();
+    vertex minVertex;
+
+    for (vertex u : vertices) {
+        if (!visited[u] && weights[u] < min) {
+            min = weights[u];
+            minVertex = u;
+        }
     }
 
     return minVertex;

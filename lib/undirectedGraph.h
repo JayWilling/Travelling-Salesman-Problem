@@ -34,6 +34,8 @@ struct vertex
                xPos == other.xPos &&
                yPos == other.yPos;
     }
+
+    explicit vertex();
 };
 
 /*
@@ -56,7 +58,11 @@ class undirected_graph
 
 private:
     std::unordered_set<vertex> vertices;
-    std::unordered_map<vertex, std::unordered_set<std::pair<vertex, float>>> edges;
+    // std::unordered_map<vertex, std::unordered_set<vertex>> edges;
+    std::unordered_map<vertex, std::unordered_map<vertex, float>> edges;    // Stores the weight tied to each edge
+    std::unordered_map<vertex, std::unordered_set<vertex>> mst;             // Adjacency list for multigraph construction
+    std::unordered_set<vertex> odd_vertices;
+    std::vector<vertex> path;                                               // Path does not need to store weights
 
 public:
     // Constructor(s) & destructors
@@ -79,6 +85,21 @@ public:
 
     float calculate_weight(const vertex &u, const vertex &v);
     bool contains(const vertex &u) const;
+    int get_degree(const vertex &u);
+
+    // For Christofides
+    //      -- List for odd vertices in private ^^ (Currently a vector, might change to unordered_set)
+    //      -- Not sure if we'll need these functions to return anything yet but we'll start here
+    void christofides();            // Presumably the parent function
+    void prims_mst();               // Pick either, both have benefits
+    void kruskals_mst();
+    int find_set(int i);
+    void union_set(int u, int v);
+    void find_odd_degrees();
+    void perfect_matching();
+    void euler_tour();
+    void make_hamiltonian();
+    vertex get_min_vertex(std::unordered_map<vertex, float> weights, std::unordered_map<vertex, bool> visited);
 
     // Iterator function definitions
     vertex_iterator vertexBegin();
