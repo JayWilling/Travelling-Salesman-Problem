@@ -156,6 +156,37 @@ void undirected_graph<vertex>::prims_mst() {
 
 }
 
+void undirected_graph<vertex>::kruskals_mst() {
+    // Need something to store pairs
+    std::vector<std::vector<int>> edgeList;
+
+    // Sort edges by weight
+    sort(edgeList.begin(), edgeList.end());
+    
+    // Pick Smallest Edge
+    //for (int i = 0; i < )
+
+    // If edge connects two nodes already in the MST, ignore it
+
+    // Keep going til all nodes are in the tree
+}
+
+// Method for Find (from GFG)
+int find_set(int i) {
+    // Note to self: define parent
+    // if i is the parent of itself
+    if (i == parent[i]) {
+        return i;
+    }
+    // if not, then i is not the representative of the set
+    // use recursion on its parent
+    return parent[i] = find_set(parent[i]);
+}
+// Method for Union (from GFG)
+void union_set(int u, int v) {
+    parent[u] = parent[v];
+}
+
 void undirected_graph<vertex>::find_odd_degrees() {
     for (vertex u : vertices) {
         int degree = get_degree(u);
