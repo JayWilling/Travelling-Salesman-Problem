@@ -24,32 +24,28 @@ private:
     double minimumTourCost;
 
     // Recursive function
-    double tsp_recursion(int& i, int& state, std::vector<std::vector<double>>& memo, std::vector<std::vector<int>>& previous)
+    double tsp_recursion(int i, int state, std::vector<std::vector<double>>& memo, std::vector<std::vector<int>>& previous)
     {
-        // std::cout << "Recursion started" << std::endl;
-
         // Tour finished
         if (state == finish_state) {
-            std::cout << "Tour done" << std::endl;
             return distance[i][start_node];
         }
-        // Return cached if already computed
+        // Return cached value if already computed
         if (memo[i][state] != NULL) {
-            // std::cout << "Already computed" << std::endl;
             return memo[i][state];
         }
+
+        // 
         double minimumCost = std::numeric_limits<double>::infinity();
         int index = -1;
         for (int next = 0; next < N; next++)
         {
-
-            // If next node has already been visited
+            // If the next node has already been visited
             if ((state & (1 << next)) != 0) {
-                // std::cout << "Already visited" << std::endl;
                 continue;
             }
             // Calculate cost for the next state
-            int nextState = state | (i << next);
+            int nextState = state | (1 << next);
             double newCost = distance[i][next] + tsp_recursion(next, nextState, memo, previous);
             if (newCost < minimumCost)
             {
@@ -87,10 +83,10 @@ public:
         4. Previous used to track the states or locations when backtracking to obtain the optimal tour
     */
     void calculate_optimal_tour()
-    {
+    {   
         int state = 1 << start_node;
         std::vector<std::vector<double>> memo(N, std::vector<double>(1 << N, NULL));
-        std::vector<std::vector<int>> previous(N, std::vector<int>(1 << N));
+        std::vector<std::vector<int>> previous(N, std::vector<int>(1 << N, NULL));
         minimumTourCost = tsp_recursion(start_node, state, memo, previous);
         std::cout << "Recursion done" << std::endl;
 
@@ -98,11 +94,9 @@ public:
         int index = start_node;
         while (true)
         {
-            std::cout << "Running loop" << std::endl;
             tour.push_back(index);
             int nextIndex = previous[index][state];
             if (nextIndex == NULL)
-                std::cout << "Breaking" << std::endl;
                 break;
             int nextState = state | (1 << nextIndex);
             state = nextState;
