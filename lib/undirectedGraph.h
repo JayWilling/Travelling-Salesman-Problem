@@ -59,9 +59,10 @@ class undirected_graph
 private:
     std::unordered_set<vertex> vertices;
     // std::unordered_map<vertex, std::unordered_set<vertex>> edges;
-    std::unordered_map<vertex, std::unordered_map<vertex, float>> edges; // Stores the weight tied to each edge
-    std::unordered_map<vertex, std::unordered_map<vertex, float>> mst; // Stores the weight tied to each edge
-    std::vector<vertex> odd_vertices;
+    std::unordered_map<vertex, std::unordered_map<vertex, float>> edges;    // Stores the weight tied to each edge
+    std::unordered_map<vertex, std::unordered_set<vertex>> mst;             // Adjacency list for multigraph construction
+    std::unordered_set<vertex> odd_vertices;
+    std::vector<vertex> path;                                               // Path does not need to store weights
 
 public:
     // Constructor(s) & destructors
