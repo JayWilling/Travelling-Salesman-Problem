@@ -91,14 +91,6 @@ private:
     std::unordered_set<vertex> odd_vertices;                                // List of vertices with odd degree in minimum spanning tree
     std::vector<vertex> path;                                               // Path does not need to store weights
     
-    // For Christofides
-    //      -- List for odd vertices in private ^^ (Currently a vector, might change to unordered_set)
-    //      -- Not sure if we'll need these functions to return anything yet but we'll start here
-    void prims_mst();
-    void find_odd_degrees();
-    void perfect_matching();
-    void euler_tour();
-    void make_hamiltonian();
     vertex get_min_vertex(std::unordered_map<vertex, float> weights, std::unordered_map<vertex, bool> visited);
 
 public:
@@ -122,7 +114,15 @@ public:
     bool contains(const vertex &u) const;
     int get_degree(const vertex &u);
 
-    void christofides();            // Presumably the parent function
+    // For Christofides
+    //      -- List for odd vertices in private ^^ (Currently a vector, might change to unordered_set)
+    //      -- Not sure if we'll need these functions to return anything yet but we'll start here
+    void prims_mst();
+    void find_odd_degrees();
+    void perfect_matching();
+    void euler_tour();
+    void make_hamiltonian();
+    void christofides();
 
     // Iterator function definitions
     vertex_iterator vertexBegin();
@@ -140,6 +140,12 @@ public:
     void print_edges();
     void print_path();
     void get_path_cost();
+    size_t get_edge_count();
+    std::unordered_set<vertex> get_vertices();
+    std::unordered_set<vertex> get_odd_vertices();
+    std::unordered_map<vertex, std::vector<vertex>> get_mst();
+    std::vector<vertex> get_path();
+
 };
 
 #endif

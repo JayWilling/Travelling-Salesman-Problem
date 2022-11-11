@@ -145,7 +145,6 @@ void undirected_graph<vertex>::prims_mst() {
             mst[v].push_back(u);
         }
     }
-
 }
 
 // Returns vertices with odd degree in the MST
@@ -300,3 +299,28 @@ void undirected_graph<vertex>::print_path() {
     std::cout << std::endl;
     std::cout << "Path Cost: " << std::endl << cost;
 }
+
+    std::unordered_set<vertex> undirected_graph<vertex>::get_vertices() {
+        return vertices;
+    }
+    std::unordered_set<vertex> undirected_graph<vertex>::get_odd_vertices() {
+        return odd_vertices;
+    }
+    std::unordered_map<vertex, std::vector<vertex>> undirected_graph<vertex>::get_mst() {
+        return mst;
+    }
+    std::vector<vertex> undirected_graph<vertex>::get_path() {
+        return path;
+    }
+
+    // Returns the number of edges present in the mst
+    size_t undirected_graph<vertex>::get_edge_count() {
+        size_t count = 0;
+        for (vertex u : vertices) {
+            for (std::vector<vertex>::iterator it = mst[u].begin(); it != mst[u].end(); ++it) {
+                count++;
+            }
+        }
+        // As there are 2 instances of each edge stored the count is divided by 2
+        return count;
+    }
