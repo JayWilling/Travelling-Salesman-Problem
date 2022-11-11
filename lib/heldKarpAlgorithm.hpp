@@ -20,13 +20,13 @@ private:
 
     std::vector<std::vector<double>> distance;
     std::vector<int> tour;
-    bool solver = false;
     double minimumTourCost;
 
     // Recursive function
     double tsp_recursion(int i, int state, std::vector<std::vector<double>>& memo, std::vector<std::vector<int>>& previous)
     {
-        // Tour finished
+        // The current state indicates all vertices have been visited
+        // Recursion ends and the current cost is returned
         if (state == finish_state) {
             return distance[i][start_node];
         }
@@ -55,10 +55,11 @@ private:
             }
         }
 
+        // Set the value of the previous state to match the minimum cost
         previous[i][state] = index;
-        std::cout << "Previous set" << std::endl;
         memo[i][state] = minimumCost;
-        std::cout << minimumCost << std::endl;
+
+        // Return the minimum for the current state
         return memo[i][state];
     }
 
@@ -84,11 +85,11 @@ public:
     */
     void calculate_optimal_tour()
     {   
+        // Implementation relies on bitwise operation to efficiently maintain states
         int state = 1 << start_node;
         std::vector<std::vector<double>> memo(N, std::vector<double>(1 << N, NULL));
         std::vector<std::vector<int>> previous(N, std::vector<int>(1 << N, NULL));
         minimumTourCost = tsp_recursion(start_node, state, memo, previous);
-        std::cout << "Recursion done" << std::endl;
 
         // After the minimum cost path is found, backtrack and rebuild the optimal tour
         int index = start_node;
@@ -98,13 +99,13 @@ public:
             int nextIndex = previous[index][state];
             if (nextIndex == NULL)
                 break;
+            // Increment to the next state and continue
             int nextState = state | (1 << nextIndex);
             state = nextState;
             index = nextIndex;
         }
 
         tour.push_back(start_node);
-        solver = true;
     }
 
     std::vector<int> get_optimal_tour() {

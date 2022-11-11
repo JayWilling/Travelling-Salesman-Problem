@@ -5,7 +5,13 @@
 #include <string>
 #include <unordered_set>
 #include <unordered_map>
-#include <utility> // std::pair
+#include <utility>          // std::pair
+#include <cmath>
+#include <limits>
+#include <queue>
+#include <stack>
+#include <iostream>
+
 
 // Define the node and constructor
 
@@ -19,13 +25,14 @@ struct vertex
     int xPos;
     int yPos;
     vertex(std::string, int, int);
+    vertex();
 
     // Structs do not have predefined comparison operators
     bool operator!=(const vertex &other) const
     {
-        return (location == other.location &&
-               xPos == other.xPos &&
-               yPos == other.yPos);
+        return (location != other.location &&
+               xPos != other.xPos &&
+               yPos != other.yPos);
     }
 
     bool operator==(const vertex &other) const
@@ -35,13 +42,34 @@ struct vertex
                yPos == other.yPos);
     }
 
-    explicit vertex();
+    // explicit vertex();
 };
+
+// Hash function for unordered map
+namespace std {
+    template <>
+    struct hash<vertex>
+    {
+        std::size_t operator()(const vertex& k) const
+        {
+        using std::size_t;
+        using std::hash;
+        using std::string;
+
+        // Compute individual hash values for first,
+        // second and third and combine them using XOR
+        // and bit shifting:
+
+        return ((hash<string>()(k.location)
+                ^ (hash<int>()(k.xPos) << 1)) >> 1)
+                ^ (hash<int>()(k.yPos) << 1);
+        }
+    };
+}
 
 /*
 Key requirements for TSP:
     - Fast search and retrieval of edges
-    - Insertion/deletion can be slow, will not take place often if at all beyond the initial graph setup
     - Graph is weighted. But weights are determined from positions of the vertices themselves.
         - Weights are paired with the relevant vertex in the adjacency list for faster access (Does not need to be recalculated each time)
 
@@ -58,17 +86,24 @@ class undirected_graph
 
 private:
     std::unordered_set<vertex> vertices;
-    // std::unordered_map<vertex, std::unordered_set<vertex>> edges;
     std::unordered_map<vertex, std::unordered_map<vertex, float>> edges;    // Stores the weight tied to each edge
-    std::unordered_map<vertex, std::unordered_set<vertex>> mst;             // Adjacency list for multigraph construction
-    std::unordered_set<vertex> odd_vertices;
+    std::unordered_map<vertex, std::vector<vertex>> mst;                    // Adjacency list for multigraph construction
+    std::unordered_set<vertex> odd_vertices;                                // List of vertices with odd degree in minimum spanning tree
     std::vector<vertex> path;                                               // Path does not need to store weights
+    
+    // For Christofides
+    //      -- List for odd vertices in private ^^ (Currently a vector, might change to unordered_set)
+    //      -- Not sure if we'll need these functions to return anything yet but we'll start here
+    void prims_mst();
+    void find_odd_degrees();
+    void perfect_matching();
+    void euler_tour();
+    void make_hamiltonian();
+    vertex get_min_vertex(std::unordered_map<vertex, float> weights, std::unordered_map<vertex, bool> visited);
 
 public:
     // Constructor(s) & destructors
     undirected_graph();
-    undirected_graph(const undirected_graph<vertex> otherGraph);
-    ~undirected_graph();
 
     // Iterators for the vertex and edge lists
     typedef typename std::unordered_set<vertex>::iterator vertex_iterator;
@@ -77,7 +112,7 @@ public:
     typedef typename std::unordered_set<vertex>::const_iterator const_neighbour_iterator;
 
     // Core graph functions - Define more as required
-    void add_vertex(const vertex &u);
+    void add_vertex(vertex &u);
     void add_edge(const vertex &u, const vertex &v);
 
     void remove_vertex(const vertex &u);
@@ -87,19 +122,7 @@ public:
     bool contains(const vertex &u) const;
     int get_degree(const vertex &u);
 
-    // For Christofides
-    //      -- List for odd vertices in private ^^ (Currently a vector, might change to unordered_set)
-    //      -- Not sure if we'll need these functions to return anything yet but we'll start here
     void christofides();            // Presumably the parent function
-    void prims_mst();               // Pick either, both have benefits
-    void kruskals_mst();
-    int find_set(int i);
-    void union_set(int u, int v);
-    void find_odd_degrees();
-    void perfect_matching();
-    void euler_tour();
-    void make_hamiltonian();
-    vertex get_min_vertex(std::unordered_map<vertex, float> weights, std::unordered_map<vertex, bool> visited);
 
     // Iterator function definitions
     vertex_iterator vertexBegin();
@@ -111,6 +134,12 @@ public:
     neighbour_iterator neighbourEnd();
     const_neighbour_iterator cNeighbourBegin();
     const_neighbour_iterator cNeighbourEnd();
+
+    // Print and return functions
+    void print_vertices();
+    void print_edges();
+    void print_path();
+    void get_path_cost();
 };
 
 #endif

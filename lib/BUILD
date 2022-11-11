@@ -2,5 +2,6 @@ package(default_visibility = ["//visibility:public"])
 
 cc_library(
     name = "tsp-lib",
-    srcs = glob(["**/*.hpp"]),
+    srcs = glob(["**/*.hpp", "**/*.cpp"]),
+    hdrs = glob(["**/*.h"]),
 )
